@@ -1,0 +1,67 @@
+Waybook License
+
+Copyright (c) 2026 Jakub Foglar. All rights reserved.
+
+Waybook ("the Software") is proprietary software, made available free of charge.
+This license governs your use of the Software, including any application binary
+(such as the distributed Android APK) provided by the copyright holder. By
+installing or using the Software, you agree to these terms. If you do not agree,
+do not install or use the Software.
+
+1. License grant
+   You are granted a personal, non-exclusive, non-transferable, revocable license
+   to install and use the Software, free of charge, on devices you own or control,
+   for your own personal, non-commercial use.
+
+2. Ownership and reservation of rights
+   The Software is licensed, not sold. It is proprietary and is NOT open-source
+   software. All rights not expressly granted in this license are reserved by the
+   copyright holder.
+
+3. Restrictions
+   Except to the extent this restriction is prohibited by applicable law, you may
+   not:
+   (a) redistribute, publish, resell, sublicense, rent, lease, or otherwise make
+       the Software available to any third party;
+   (b) modify, adapt, translate, or create derivative works of the Software;
+   (c) reverse engineer, decompile, or disassemble the Software, or otherwise
+       attempt to derive its source code, except to the extent applicable law
+       expressly permits despite this limitation;
+   (d) remove, obscure, or alter any copyright, trademark, or attribution notices.
+
+4. Free of charge; future paid features
+   The Software is currently provided free of charge. The copyright holder may
+   introduce paid, premium, or subscription features, and may change which
+   features are offered free of charge, at any time and without notice.
+
+5. Third-party data and components
+   The Software incorporates third-party data and open-source components that are
+   licensed under their own terms; these are recorded in NOTICE. Nothing in this
+   license limits your rights under, or your obligations to, those third-party
+   terms, which continue to govern that material. Data and content produced by the
+   Software (for example, place catalogs) may be subject to upstream licenses such
+   as the OpenStreetMap ODbL and Wikimedia CC BY-SA; you are responsible for
+   complying with those terms.
+
+6. Trademarks
+   This license grants no right to use the "Waybook" name or logo, or any
+   third-party trademarks (such as "Hammerhead" or "Karoo"), except as reasonably
+   necessary to identify the Software.
+
+7. No warranty
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+   FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+8. Limitation of liability
+   IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+   OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+   FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+
+9. Termination
+   This license terminates automatically if you breach any of its terms. On
+   termination, you must stop using and remove all copies of the Software in your
+   possession or control.
+
+For licensing inquiries, contact: jakub.foglar@gmail.com
