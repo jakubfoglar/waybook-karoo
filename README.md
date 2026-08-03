@@ -17,9 +17,13 @@ stands. Once it is built it needs no signal.
 | <img src="docs/route.png" width="200" alt="The ROUTE tab: every place along the ride, in order"> | <img src="docs/place.jpg" width="200" alt="A place card: photo, story and Navigate here"> | <img src="docs/nearby.png" width="200" alt="The NEARBY tab: what is around you right now"> | <img src="docs/field.png" width="200" alt="The Waybook data field on a ride screen"> |
 | **The route, in order**, with photos, opening hours and the distance ahead. | **Tap one for the card**: what it is, why riders know it, and where the words came from. | **Nearby**, for when the plan changes — filtered to coffee, food or something to look at. | **On the ride screen**, so you never open the app. |
 
-Every place is also a pin on the Karoo's own map, and *Navigate here* hands it to
-turn-by-turn with the detour it will cost you. The shots above are one build over Caimari,
-up the Coll de sa Batalla to Lluc, then down Sa Calobra.
+Every place is also a pin on the map you already navigate with, and *Navigate here* hands it
+to turn-by-turn with the detour it will cost you.
+
+|  |  |
+|:--:|:--:|
+| <img src="docs/map.png" width="240" alt="Waybook pins on the Karoo's map beside the navigation line"> | <img src="docs/map-nearby.png" width="240" alt="Nearby's search circle drawn around the rider with pins inside it"> |
+| **On the route**, next to the line you are following. | **Nearby**, drawn around you as you ride. |
 
 ## Install
 
