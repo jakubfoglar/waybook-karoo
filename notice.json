@@ -1,3 +1,11 @@
 {
-  "minBuild": 0
+  "minBuild": 413,
+  "notice": {
+    "id": "2026-08-17-update-0-6-2",
+    "level": "important",
+    "title": "Hi! Please update to the new version",
+    "body": "New big update is out with water sources and lots of fixes.",
+    "until": "2026-08-24T12:00:00Z",
+    "hideAtBuild": 413
+  }
 }
