@@ -1,11 +1,11 @@
 {
   "minBuild": 413,
   "notice": {
-    "id": "2026-08-17-update-0-6-2",
-    "level": "important",
-    "title": "Hi! Please update to the new version",
-    "body": "New big update is out with water sources and lots of fixes.",
-    "until": "2026-08-24T12:00:00Z",
-    "hideAtBuild": 413
+    "id": "2026-08-21-update-0-7",
+    "level": "info",
+    "title": "Update available",
+    "body": "Waybook 0.7 is out \u2014 places now research themselves, live. Update in the app settings.",
+    "until": "2026-09-04T12:00:00Z",
+    "hideAtBuild": 426
   }
 }
