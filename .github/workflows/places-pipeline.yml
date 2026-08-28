@@ -1,0 +1,163 @@
+# The standing Places V2 recovery/backlog worker runs in this PUBLIC repository because standard
+# GitHub-hosted runners for public repositories do not consume the private repo's metered minutes.
+# The private source is checked out read-only with a deploy key. This is not the tap latency path:
+# Research runs the exact rider job inline; this sweep recovers deferrals and drains catalog work.
+# Schedule + dispatch only, so repository secrets are never exposed to pull requests or forks.
+name: Places pipeline v2
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Bounded operation to run"
+        required: true
+        default: "source-trust"
+        type: choice
+        options:
+          - source-trust
+          - source-trust-current
+          - source-trust-review
+          - blocked-source-repairs
+          - strict-historical-rebase
+          - skip-stale-trust-projections
+          - historical-materializations
+          - catalog-projections
+          - search-documents
+          - full-pipeline
+      limit:
+        description: "Maximum rows claimed by each bounded stage"
+        required: false
+        default: "500"
+      batches:
+        description: "Source-trust batches (ignored by other modes)"
+        required: false
+        default: "1"
+      concurrency:
+        description: "Trust/writer concurrency"
+        required: false
+        default: "16"
+
+concurrency:
+  group: places-pipeline-v2
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  maintenance:
+    if: >-
+      ${{
+        (github.event_name == 'schedule' && vars.WAYBOOK_SOURCE_TRUST_BACKFILL_ENABLED == '1') ||
+        (github.event_name == 'workflow_dispatch' && inputs.mode != 'full-pipeline')
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://nqtvcxztuuoywznxrxga.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      MODE: ${{ github.event_name == 'schedule' && 'source-trust' || inputs.mode }}
+      LIMIT: ${{ inputs.limit || '1000' }}
+      BATCHES: ${{ inputs.batches || '1' }}
+      TRUST_CONCURRENCY: ${{ inputs.concurrency || '16' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: jakubfoglar/waybook
+          ssh-key: ${{ secrets.WAYBOOK_DEPLOY_KEY }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --omit=dev
+      - name: Run one bounded maintenance cohort
+        shell: bash
+        run: |
+          case "$MODE" in
+            source-trust|source-trust-current)
+              trust_scope=()
+              if [ "$MODE" = "source-trust-current" ]; then
+                trust_scope=(--scope current-materializations)
+              fi
+              node tools/worker/backfill-source-trust.mjs --run \
+                --limit "$LIMIT" --batches "$BATCHES" --concurrency "$TRUST_CONCURRENCY" \
+                --deadline-ms 720000 "${trust_scope[@]}"
+              node tools/worker/drain-historical-materializations.mjs --run --if-audit-policy
+              node tools/worker/drain-catalog-projections.mjs --run
+              ;;
+            source-trust-review)
+              node tools/own-site-review.mjs --sample "$LIMIT" \
+                --out tools/own-site-review.html
+              ;;
+            blocked-source-repairs)
+              node tools/worker/enqueue-blocked-source-repairs.mjs --run \
+                --limit "$LIMIT" --batches "$BATCHES"
+              ;;
+            strict-historical-rebase)
+              node tools/worker/rebase-historical-trust.mjs --run \
+                --limit "$LIMIT" --batches "$BATCHES"
+              ;;
+            skip-stale-trust-projections)
+              node tools/worker/rebase-historical-trust.mjs --run --skip-stale \
+                --limit "$LIMIT" --batches "$BATCHES"
+              ;;
+            historical-materializations)
+              node tools/worker/drain-historical-materializations.mjs --run
+              ;;
+            catalog-projections)
+              node tools/worker/drain-catalog-projections.mjs --run
+              ;;
+            search-documents)
+              node tools/worker/project-materializations.mjs --target search_documents \
+                --limit "$LIMIT" --batches "$BATCHES"
+              ;;
+            *)
+              echo "Unsupported maintenance mode: $MODE" >&2
+              exit 2
+              ;;
+          esac
+      - name: Upload source-trust review sample
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'source-trust-review' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-trust-review-${{ github.run_id }}
+          path: tools/own-site-review.html
+          if-no-files-found: error
+          retention-days: 14
+
+  drain:
+    if: >-
+      ${{
+        (github.event_name == 'schedule' && vars.PLACES_PIPELINE_V2_ENABLED == '1') ||
+        (github.event_name == 'workflow_dispatch' && inputs.mode == 'full-pipeline')
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://nqtvcxztuuoywznxrxga.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      WAYBOOK_INTERNAL_WRITE_TOKEN: ${{ secrets.WAYBOOK_INTERNAL_WRITE_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+      WAYBOOK_SPEND_GUARDS_V1: ${{ vars.WAYBOOK_SPEND_GUARDS_V1 || '0' }}
+      WAYBOOK_ENTITY_LAYERS_V1: ${{ vars.WAYBOOK_ENTITY_LAYERS_V1 || '0' }}
+      WAYBOOK_SCHEDULED_ENTITY_LAYERS_V1: ${{ vars.WAYBOOK_SCHEDULED_ENTITY_LAYERS_V1 || '0' }}
+      LIMIT: ${{ inputs.limit || '100' }}
+      WRITER_CONCURRENCY: ${{ inputs.concurrency || '8' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: jakubfoglar/waybook
+          ssh-key: ${{ secrets.WAYBOOK_DEPLOY_KEY }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --omit=dev
+      - name: Drain one bounded places pass
+        run: >-
+          node tools/worker/run-place-pipeline.mjs
+          --limit "$LIMIT"
+          --concurrency "$WRITER_CONCURRENCY"
+          --deadline-ms 720000
