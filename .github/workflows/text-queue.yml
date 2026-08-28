@@ -31,4 +31,5 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+          WAYBOOK_INTERNAL_WRITE_TOKEN: ${{ secrets.WAYBOOK_INTERNAL_WRITE_TOKEN }}
         run: node tools/worker/drain-text-queue.mjs --once
