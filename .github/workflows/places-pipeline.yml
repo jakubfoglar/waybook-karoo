@@ -1,13 +1,11 @@
-# The standing Places V2 recovery/backlog worker runs in this PUBLIC repository because standard
-# GitHub-hosted runners for public repositories do not consume the private repo's metered minutes.
-# The private source is checked out read-only with a deploy key. This is not the tap latency path:
-# Research runs the exact rider job inline; this sweep recovers deferrals and drains catalog work.
-# Schedule + dispatch only, so repository secrets are never exposed to pull requests or forks.
+# A manual fallback for the Places V2 pipeline. The standing worker runs on Vercel (private repo,
+# docs/design/place-latency.md D11); this workflow is dispatch-only so a human can run a bounded
+# operation from GitHub if that worker is paused. The private source is checked out read-only
+# with a deploy key. Dispatch only, so repository secrets are never exposed to pull requests or
+# forks; the `schedule` trigger was removed on 2026-09-18 at the cutover.
 name: Places pipeline v2
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       mode:
